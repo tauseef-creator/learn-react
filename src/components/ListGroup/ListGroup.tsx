@@ -1,12 +1,12 @@
 import { useState } from "react";
-
-interface ListGroupProps {
+//importing css module
+import styles from "./ListGroup.module.css";
+interface ListGroupProps {  
   items: String[];
   heading: String;
-  onSelectItem: (item: String) => void;
 }
 
-function ListGroup({ items, heading, onSelectItem }: ListGroupProps) {
+function ListGroup({ items, heading }: ListGroupProps) {
   // hooks,used if some component might have value that changes over time
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const GetMessage = () => {
@@ -17,7 +17,7 @@ function ListGroup({ items, heading, onSelectItem }: ListGroupProps) {
     <>
       <h1>{heading}</h1>
       {GetMessage()}
-      <ul className="list-group">
+      <ul className={[styles.listGroup, styles.container].join(' ')}>
         {items.map((item, index) => (
           <li
             className={
@@ -27,7 +27,6 @@ function ListGroup({ items, heading, onSelectItem }: ListGroupProps) {
             }
             onClick={() => {
               setSelectedIndex(index);
-              onSelectItem(item);
             }}
           >
             {item}
