@@ -1,10 +1,17 @@
 import { useState } from "react";
 //importing css module
-import styles from "./ListGroup.module.css";
-interface ListGroupProps {  
+import "./ListGroup.css";
+import styled from "styled-components";
+interface ListGroupProps {
   items: String[];
   heading: String;
 }
+
+const List = styled.ul`
+  list-style: none;
+  padding: 0;
+  background: red;
+`;
 
 function ListGroup({ items, heading }: ListGroupProps) {
   // hooks,used if some component might have value that changes over time
@@ -17,7 +24,7 @@ function ListGroup({ items, heading }: ListGroupProps) {
     <>
       <h1>{heading}</h1>
       {GetMessage()}
-      <ul className={[styles.listGroup, styles.container].join(' ')}>
+      <List>
         {items.map((item, index) => (
           <li
             className={
@@ -33,7 +40,7 @@ function ListGroup({ items, heading }: ListGroupProps) {
           </li>
         ))}
         {/*enclosed in {} bcz only comp and html allowed in jsx */}
-      </ul>
+      </List>
     </>
   );
 }
