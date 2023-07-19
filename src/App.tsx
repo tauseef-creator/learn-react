@@ -8,6 +8,7 @@ import Like from "./components/Like"
 import Drink from "./components/Drink";
 import Person from "./components/Person";
 import StateArray from "./components/StateArray";
+import StateObjArray from "./components/StateObjArray";
 
 function App() {
   const [alertVisible, setAlertVisibility] = useState(false);
@@ -22,7 +23,8 @@ function App() {
       {/* <Like changeStatus={changeLikeStatus}/> */}
       {/* <Drink/> */}
       {/* <Person/> */}
-      <StateArray/>
+      {/* <StateArray/> */}
+      <StateObjArray/>
     </div>
   );
 }
