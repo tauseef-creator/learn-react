@@ -67,7 +67,7 @@ function App() {
       {/* <ExpandableText lengthToSet={10}>Lorem</ExpandableText>   */}
       {/* <Form categories={ExpenseCategoriesToAdd} addItem={addItem}/> */}
       {/* <ExpenseList categories={ExpenseCategoriesToView} items={items} removeItem={removeItem}/> */}
-      <ProductList/>
+      <ProductList category={category}/>
     </div>
   );
 }
