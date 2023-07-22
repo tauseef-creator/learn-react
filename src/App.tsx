@@ -47,24 +47,32 @@ function App() {
   // const [category, setCategory] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
+  const[isLoading, setLoading] = useState(true);
   useEffect(() => {
-    
-    const fethcUsers = async () => {
-    try{
-        const res = await axios.get<User[]>("https://jsonplaceholder.typicode.com/users")
-        setUsers(res.data);
-    }catch(err) {
-      setError((err as AxiosError).message);
-    }
-  }
-    fethcUsers();
+        const controller = new AbortController();
+        const res = axios.get<User[]>("https://jsonplaceholder.typicode.com/users", {signal: controller.signal})
+        .then((res) => {
+          setUsers(res.data);
+          setLoading(false);
+        }
+        )
+        .catch((err: AxiosError) => {
+          setError(err.message);
+          setLoading(false);
+        }
+        );
+        // return () => {
+        //   controller.abort();
+        // }
+       
 }, []);
 
   return (
     <div>
+      {isLoading && <div className="spinner-border" role="status">
+  {/* <span className="sr-only">Loading...</span> */}
+</div>}
       {error && <p className="text-danger">{error}</p>}
-    
-    
       <ul>
         {users.map((user) => (
           <li key={user.id}>{user.name}</li>
