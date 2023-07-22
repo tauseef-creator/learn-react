@@ -17,8 +17,7 @@ import ExpandableText from "./components/ExpandableText";
 import Form from "./components/Form";
 import ExpenseList from "./components/expense-tracker/components/ExpenseList";
 import ProductList from "./components/ProductList";
-import axios from "axios";
-
+import axios, {AxiosError} from "axios";
 
 interface User {
   id: number;
@@ -46,23 +45,32 @@ function App() {
   //   setItems(items.filter((i) => i !== item));
   // };
   // const [category, setCategory] = useState('');
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
   useEffect(() => {
-    axios.get<User[]>("https://jsonplaceholder.typicode.com/users")
-    .then((res) => {
-       setUsers(res.data)
-    })
-  },[])
-
+    
+    const fethcUsers = async () => {
+    try{
+        const res = await axios.get<User[]>("https://jsonplaceholder.typicode.com/users")
+        setUsers(res.data);
+    }catch(err) {
+      setError((err as AxiosError).message);
+    }
+  }
+    fethcUsers();
+}, []);
 
   return (
     <div>
+      {error && <p className="text-danger">{error}</p>}
+    
+    
       <ul>
         {users.map((user) => (
           <li key={user.id}>{user.name}</li>
         ))}
       </ul>
-    {/* <select className="form-select" 
+      {/* <select className="form-select" 
      onChange={(event) => {
       setCategory(event.target.value);
     }}
