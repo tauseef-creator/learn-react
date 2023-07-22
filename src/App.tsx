@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Alert from "./components/Alert";
 import Button from "./components/Button";
 import ListGroup from "./components/ListGroup/ListGroup";
@@ -17,6 +17,13 @@ import ExpandableText from "./components/ExpandableText";
 import Form from "./components/Form";
 import ExpenseList from "./components/expense-tracker/components/ExpenseList";
 import ProductList from "./components/ProductList";
+import axios from "axios";
+
+
+interface User {
+  id: number;
+  name: string;
+}
 
 function App() {
   // const [alertVisible, setAlertVisibility] = useState(false);
@@ -38,11 +45,24 @@ function App() {
   // const removeItem = (item: any) => {
   //   setItems(items.filter((i) => i !== item));
   // };
-  const [category, setCategory] = useState('');
+  // const [category, setCategory] = useState('');
+  const [users, setUsers] = useState<User[]>([])
+  useEffect(() => {
+    axios.get<User[]>("https://jsonplaceholder.typicode.com/users")
+    .then((res) => {
+       setUsers(res.data)
+    })
+  },[])
+
 
   return (
     <div>
-    <select className="form-select" 
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    {/* <select className="form-select" 
      onChange={(event) => {
       setCategory(event.target.value);
     }}
@@ -51,7 +71,7 @@ function App() {
       <option value="Household">Household</option>
       <option value="Electronics">Electronics</option>
       <option value="Grocery">Grocery</option>
-    </select>
+    </select> */}
       {/* <ListGroup items = {items} heading="Cities"/> */}
       {/* <Icon/> */}
       {/* <Like changeStatus={changeLikeStatus}/> */}
@@ -67,7 +87,7 @@ function App() {
       {/* <ExpandableText lengthToSet={10}>Lorem</ExpandableText>   */}
       {/* <Form categories={ExpenseCategoriesToAdd} addItem={addItem}/> */}
       {/* <ExpenseList categories={ExpenseCategoriesToView} items={items} removeItem={removeItem}/> */}
-      <ProductList category={category}/>
+      {/* <ProductList category={category}/> */}
     </div>
   );
 }
