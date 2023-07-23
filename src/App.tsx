@@ -78,7 +78,23 @@ function App() {
         setUsers(originalUsers);
       });
   };
-  
+  const addUser = () => {
+    const user = {
+      id: users.length + 1,
+      name: "New User"+ users.length + 1,
+    };
+    const originalUsers = [...users];
+    axios.post("https://jsonplaceholder.typicode.com/users", user)
+    .then((res) => {
+      setUsers([res.data, ...users]);
+    })
+    .catch((err: AxiosError) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+
+    }
+
   return (
     <div>
       {isLoading && (
@@ -89,6 +105,9 @@ function App() {
       {error && <p className="text-danger">{error}</p>}
       {!users.length && <p>No item to show</p>}
       <ul className="list-group">
+        <button className="btn btn-primary"
+        onClick={addUser}
+        >Add</button>
         {users.map((user) => (
           <li
             key={user.id}
