@@ -19,11 +19,7 @@ import ExpenseList from "./components/expense-tracker/components/ExpenseList";
 import ProductList from "./components/ProductList";
 import axios, { AxiosError } from "axios";
 import { set } from "react-hook-form";
-
-interface User {
-  id: number;
-  name: string;
-}
+import userService, { User } from "./services/user-service";
 
 function App() {
   // const [alertVisible, setAlertVisibility] = useState(false);
@@ -50,12 +46,8 @@ function App() {
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
-    const controller = new AbortController();
-    const res = axios
-      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-        signal: controller.signal,
-      })
-      .then((res) => {
+        const {request, cancel }=userService.getAll<User>();
+        request.then((res) => {
         setUsers(res.data);
         setLoading(false);
       })
@@ -63,16 +55,14 @@ function App() {
         setError(err.message);
         setLoading(false);
       });
-    // return () => {
-    //   controller.abort();
-    // }
+    return cancel;
   }, []);
 
   const deleteUser = (user: User) => {
     const originalUsers = [...users];
     setUsers(users.filter((u) => u.id !== user.id));
-    axios
-      .delete(`https://jsonplaceholder.typicode.com/users/${user.id}`)
+    
+    userService.delete(user.id)
       .catch((err: AxiosError) => {
         setError(err.message);
         setUsers(originalUsers);
@@ -81,20 +71,32 @@ function App() {
   const addUser = () => {
     const user = {
       id: users.length + 1,
-      name: "New User"+ users.length + 1,
+      name: "New User" + users.length + 1,
     };
     const originalUsers = [...users];
-    axios.post("https://jsonplaceholder.typicode.com/users", user)
+    userService.add(user)
+      .then((res) => {
+        setUsers([res.data, ...users]);
+      })
+      .catch((err: AxiosError) => {
+        setError(err.message);
+        setUsers(originalUsers);
+      });
+  };
+
+  const updateUser = (user: User) => () => {
+    const updatedUser = {...user, name: user.name + '!'};
+    const originalUsers = [...users];
+    userService.update(updatedUser)
     .then((res) => {
-      setUsers([res.data, ...users]);
-    })
-    .catch((err: AxiosError) => {
+      setUsers(users.map(u => u.id === user.id ? res.data : u));
+    }
+    ).catch((err: AxiosError) => {
       setError(err.message);
       setUsers(originalUsers);
-    });
-
     }
-
+    )
+  }
   return (
     <div>
       {isLoading && (
@@ -105,21 +107,24 @@ function App() {
       {error && <p className="text-danger">{error}</p>}
       {!users.length && <p>No item to show</p>}
       <ul className="list-group">
-        <button className="btn btn-primary"
-        onClick={addUser}
-        >Add</button>
+        <button className="btn btn-primary" onClick={addUser}>
+          Add
+        </button>
         {users.map((user) => (
           <li
             key={user.id}
             className="list-group-item  d-flex justify-content-between"
           >
             {user.name}
-            <button
-              onClick={() => deleteUser(user)}
-              className="btn btn-outline-danger"
-            >
-              Delete
-            </button>
+            <div>
+              <button onClick={updateUser(user)} className="mx-1 btn btn-outline-secondary">Update</button>
+              <button
+                onClick={() => deleteUser(user)}
+                className="btn btn-outline-danger"
+              >
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
