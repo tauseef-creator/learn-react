@@ -17,7 +17,8 @@ import ExpandableText from "./components/ExpandableText";
 import Form from "./components/Form";
 import ExpenseList from "./components/expense-tracker/components/ExpenseList";
 import ProductList from "./components/ProductList";
-import axios, {AxiosError} from "axios";
+import axios, { AxiosError } from "axios";
+import { set } from "react-hook-form";
 
 interface User {
   id: number;
@@ -47,35 +48,60 @@ function App() {
   // const [category, setCategory] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
-  const[isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
   useEffect(() => {
-        const controller = new AbortController();
-        const res = axios.get<User[]>("https://jsonplaceholder.typicode.com/users", {signal: controller.signal})
-        .then((res) => {
-          setUsers(res.data);
-          setLoading(false);
-        }
-        )
-        .catch((err: AxiosError) => {
-          setError(err.message);
-          setLoading(false);
-        }
-        );
-        // return () => {
-        //   controller.abort();
-        // }
-       
-}, []);
+    const controller = new AbortController();
+    const res = axios
+      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+        signal: controller.signal,
+      })
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false);
+      })
+      .catch((err: AxiosError) => {
+        setError(err.message);
+        setLoading(false);
+      });
+    // return () => {
+    //   controller.abort();
+    // }
+  }, []);
 
+  const deleteUser = (user: User) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((u) => u.id !== user.id));
+    axios
+      .delete(`https://jsonplaceholder.typicode.com/users/${user.id}`)
+      .catch((err: AxiosError) => {
+        setError(err.message);
+        setUsers(originalUsers);
+      });
+  };
+  
   return (
     <div>
-      {isLoading && <div className="spinner-border" role="status">
-  {/* <span className="sr-only">Loading...</span> */}
-</div>}
+      {isLoading && (
+        <div className="spinner-border" role="status">
+          {/* <span className="sr-only">Loading...</span> */}
+        </div>
+      )}
       {error && <p className="text-danger">{error}</p>}
-      <ul>
+      {!users.length && <p>No item to show</p>}
+      <ul className="list-group">
         {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
+          <li
+            key={user.id}
+            className="list-group-item  d-flex justify-content-between"
+          >
+            {user.name}
+            <button
+              onClick={() => deleteUser(user)}
+              className="btn btn-outline-danger"
+            >
+              Delete
+            </button>
+          </li>
         ))}
       </ul>
       {/* <select className="form-select" 
