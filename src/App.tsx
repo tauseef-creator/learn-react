@@ -20,6 +20,7 @@ import ProductList from "./components/ProductList";
 import axios, { AxiosError } from "axios";
 import { set } from "react-hook-form";
 import userService, { User } from "./services/user-service";
+import useUsers from "./hooks/useUsers";
 
 function App() {
   // const [alertVisible, setAlertVisibility] = useState(false);
@@ -42,21 +43,9 @@ function App() {
   //   setItems(items.filter((i) => i !== item));
   // };
   // const [category, setCategory] = useState('');
-  const [users, setUsers] = useState<User[]>([]);
-  const [error, setError] = useState("");
-  const [isLoading, setLoading] = useState(true);
-  useEffect(() => {
-        const {request, cancel }=userService.getAll<User>();
-        request.then((res) => {
-        setUsers(res.data);
-        setLoading(false);
-      })
-      .catch((err: AxiosError) => {
-        setError(err.message);
-        setLoading(false);
-      });
-    return cancel;
-  }, []);
+  
+
+  const {users, error, isLoading,setUsers, setError} = useUsers();
 
   const deleteUser = (user: User) => {
     const originalUsers = [...users];
